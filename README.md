@@ -20,6 +20,27 @@ candidate.json → Python data model → LaTeX template → LuaLaTeX → PDF →
 - Locale support (en, pt-BR)
 - Single-file binary packaging via PyInstaller
 
+## Before & After
+
+Below is a visual comparison between a standard resume PDF and a version tailored to a specific vacancy using LLM-powered content rewriting.
+
+![before-after](docs/assets/before-after.png)
+
+The tailored candidate JSON was generated with:
+
+```bash
+hirepaper content tailor data/candidate.json data/vacancy.txt \
+  --output data/candidate-tailored.json \
+  --inference high \
+  --mode rewrite
+```
+
+Sample files:
+- **Standard input:** [`data/candidate.json`](data/candidate.json)
+- **Tailored output:** [`data/candidate-tailored.json`](data/candidate-tailored.json)
+- **Standard PDF:** [`docs/examples/hirepaper-sample.pdf`](docs/examples/hirepaper-sample.pdf)
+- **Tailored PDF:** [`docs/examples/hirepaper-sample-tailored.pdf`](docs/examples/hirepaper-sample-tailored.pdf)
+
 ## Prerequisites
 
 - Python ≥ 3.10

@@ -41,6 +41,7 @@ Important paths in the `hirepaper` project.
 - `locale/`: gettext locale files.
 
 - `data/candidate.json`: sample candidate input.
+- `data/candidate-tailored.json`: sample candidate tailored input.
 - `data/vacancy.txt`: sample vacancy input.
 
 - [docs/content.md](content.md): command reference for `content init`, `lint`, `match`, `tailor`.
