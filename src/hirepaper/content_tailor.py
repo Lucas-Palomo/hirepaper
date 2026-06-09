@@ -137,7 +137,7 @@ def _build_candidate_payload_with_ids(candidate: Candidate) -> dict:
         "name": p.name,
         "headline": p.headline or "",
         "email": p.email,
-        "phone": p.phone.value,
+        "phone": {"value": p.phone.value, "hyperlink": p.phone.hyperlink},
         "location": p.location,
     }
     if p.links:
@@ -1063,6 +1063,13 @@ def _apply_project_rewrite(ref: str, new_text: str, candidate_raw: dict) -> None
                         return
 
 
+def _convert_phone(raw: object) -> dict[str, str]:
+    if isinstance(raw, dict):
+        return {"value": raw.get("value", ""), "hyperlink": raw.get("hyperlink", "")}
+    val = str(raw) if raw is not None else ""
+    return {"value": val, "hyperlink": f"tel:{val.replace(' ', '')}"}
+
+
 def _convert_payload_to_candidate_json(payload_with_ids: dict) -> dict:
     result: dict[str, Any] = {}
 
@@ -1071,7 +1078,7 @@ def _convert_payload_to_candidate_json(payload_with_ids: dict) -> dict:
         personal_out: dict[str, Any] = {
             "name": personal.get("name", ""),
             "email": personal.get("email", ""),
-            "phone": personal.get("phone", ""),
+            "phone": _convert_phone(personal.get("phone", "")),
             "location": personal.get("location", ""),
         }
         if personal.get("headline"):

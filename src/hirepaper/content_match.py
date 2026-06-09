@@ -67,7 +67,7 @@ def _build_candidate_payload(candidate: Candidate) -> dict:
         "name": p.name,
         "headline": p.headline or "",
         "email": p.email,
-        "phone": p.phone.value,
+        "phone": {"value": p.phone.value, "hyperlink": p.phone.hyperlink},
         "location": p.location,
     }
     if p.links:
