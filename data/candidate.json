@@ -123,7 +123,7 @@
       "name": "Personal Blog Platform",
       "description": "Full-stack blog platform with Markdown support, tag system, and analytics dashboard serving 5K monthly visitors",
       "technologies": ["Next.js", "PostgreSQL", "Tailwind CSS"],
-      "url": "https://blog.joaosilva.dev"
+      "url": "http://127.0.0.1"
     }
   ],
   "certifications": [
