@@ -1,0 +1,93 @@
+# English translations for hirepaper
+# Copyright (C) 2026
+#
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+
+msgid "section.profile"
+msgstr "Profile"
+
+msgid "section.experience"
+msgstr "Experience"
+
+msgid "section.education"
+msgstr "Education"
+
+msgid "section.skills"
+msgstr "Skills"
+
+msgid "section.projects"
+msgstr "Projects"
+
+msgid "section.certifications"
+msgstr "Certifications"
+
+msgid "section.languages"
+msgstr "Languages"
+
+msgid "section.awards"
+msgstr "Awards"
+
+msgid "section.volunteer"
+msgstr "Volunteer"
+
+msgid "label.present"
+msgstr "Present"
+
+msgid "label.gpa"
+msgstr "GPA"
+
+msgid "section.links"
+msgstr "Online"
+
+msgid "label.email"
+msgstr "Email"
+
+msgid "label.phone"
+msgstr "Phone"
+
+msgid "label.location"
+msgstr "Location"
+
+msgid "label.employment_type"
+msgstr "Type"
+
+msgid "month.01"
+msgstr "Jan"
+
+msgid "month.02"
+msgstr "Feb"
+
+msgid "month.03"
+msgstr "Mar"
+
+msgid "month.04"
+msgstr "Apr"
+
+msgid "month.05"
+msgstr "May"
+
+msgid "month.06"
+msgstr "Jun"
+
+msgid "month.07"
+msgstr "Jul"
+
+msgid "month.08"
+msgstr "Aug"
+
+msgid "month.09"
+msgstr "Sep"
+
+msgid "month.10"
+msgstr "Oct"
+
+msgid "month.11"
+msgstr "Nov"
+
+msgid "month.12"
+msgstr "Dec"

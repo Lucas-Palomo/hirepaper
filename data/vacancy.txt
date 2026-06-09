@@ -1,0 +1,38 @@
+Senior Backend Engineer
+
+Company: TechNova Solutions
+Location: São Paulo, SP (hybrid)
+Type: Full-time
+
+About the role:
+We are looking for a Senior Backend Engineer to join our platform team. You will design, build, and maintain distributed systems that serve millions of users across Latin America.
+
+Requirements:
+- 5+ years of experience in software engineering
+- Strong proficiency in Python or Go
+- Experience with REST API design and development
+- Solid understanding of SQL and relational databases (PostgreSQL preferred)
+- Experience with message brokers (Kafka or RabbitMQ)
+- Docker and container orchestration (Kubernetes)
+- Experience with cloud services (AWS or GCP)
+- CI/CD pipelines and infrastructure-as-code
+- English proficiency (C1 or higher)
+- Strong communication and mentoring skills
+
+Nice to have:
+- Experience with FastAPI or Django
+- Monitoring and observability (Prometheus, Grafana)
+- Terraform or similar IaC tools
+- Real-time systems experience (WebSockets, event-driven architecture)
+- Open source contributions
+
+What we offer:
+- Competitive salary and equity
+- Health and dental insurance
+- Flexible working hours
+- Remote-friendly hybrid model
+- Annual learning budget
+- Equipment budget
+
+About TechNova:
+TechNova is a fast-growing tech company building the next generation of financial infrastructure for Latin America. We process over 50 million transactions monthly and are expanding our engineering team to support our growth.

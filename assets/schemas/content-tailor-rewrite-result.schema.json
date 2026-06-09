@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hirepaper.local/schemas/content-tailor-rewrite-result.schema.json",
+  "title": "Content Tailor Rewrite Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mode",
+    "rewrite_results",
+    "warnings"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "const": "rewrite"
+    },
+    "rewrite_results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rewrite_result"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "grounding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_type", "source_ref", "excerpt"],
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": ["candidate_json", "extra_context", "vacancy_text"]
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rewrite_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_id",
+        "target_kind",
+        "target_refs",
+        "operation",
+        "rewritten_text",
+        "grounding",
+        "confidence"
+      ],
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_kind": {
+          "type": "string",
+          "enum": [
+            "headline",
+            "summary",
+            "target_role",
+            "experience_bullet",
+            "project_description",
+            "project_bullet"
+          ]
+        },
+        "target_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "operation": {
+          "type": "string",
+          "enum": ["rewrite_1_to_1", "rewrite_n_to_1"]
+        },
+        "rewritten_text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grounding_ref"
+          },
+          "minItems": 1
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

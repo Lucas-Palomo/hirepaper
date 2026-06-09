@@ -1,0 +1,169 @@
+{
+  "personal": {
+    "name": "João Silva",
+    "headline": "Senior Software Engineer — Distributed Systems & Platform Architecture",
+    "email": "joao.silva@email.com",
+    "phone": {
+      "value": "+55 11 99999-9999",
+      "hyperlink": "tel:+5511999999999"
+    },
+    "location": "São Paulo, SP",
+    "links": [
+      { "label": "LinkedIn", "url": "https://linkedin.com/in/joaosilva" },
+      { "label": "GitHub", "url": "https://github.com/joaosilva" },
+      { "label": "StackOverflow", "url": "https://stackoverflow.com/users/~joaosilva" }
+    ],
+    "extra_links": [
+      { "label": "Portfolio", "url": "https://joaosilva.dev" }
+    ]
+  },
+  "target_role": "Senior Software Engineer",
+  "summary": "Senior Software Engineer with 8+ years of experience building distributed systems and web applications. Passionate about clean architecture, test-driven development, and mentoring junior engineers. Proven track record of delivering scalable solutions that serve millions of users.",
+  "experience": [
+    {
+      "company": "TechCorp Solutions",
+      "position": "Senior Software Engineer",
+      "location": "São Paulo, SP",
+      "start_date": "2021-03",
+      "end_date": null,
+      "current": true,
+      "technologies": ["Python", "Kafka", "PostgreSQL", "Docker", "Kubernetes", "AWS"],
+      "role_summary": "Platform team — internal developer platform serving 200+ engineers",
+      "highlights": [
+        "Led migration of monolithic application to microservices architecture, reducing deployment time by 80%",
+        "Designed and implemented real-time data pipeline processing 10M+ events/day using Kafka and PostgreSQL",
+        "Mentored 4 junior engineers through structured pair programming and code review practices",
+        "Reduced system latency by 40% through query optimization and caching strategy implementation"
+      ]
+    },
+    {
+      "company": "StartupXYZ",
+      "position": "Software Engineer",
+      "location": "Campinas, SP",
+      "start_date": "2018-02",
+      "end_date": "2021-02",
+      "current": false,
+      "technologies": ["Python", "Django", "PostgreSQL", "React", "Docker"],
+      "achievements": [
+        {
+          "action": "Built RESTful API serving 50K+ daily active users",
+          "result": "enabling real-time data access for the entire customer base",
+          "metrics": "99.9% uptime over 2 years"
+        },
+        {
+          "action": "Implemented CI/CD pipeline with GitHub Actions",
+          "result": "reducing release cycle from 2 weeks to daily deployments"
+        },
+        {
+          "action": "Developed real-time notification system using WebSockets",
+          "result": "improving user engagement by 25%"
+        }
+      ]
+    },
+    {
+      "company": "WebDev Agency",
+      "position": "Junior Software Engineer",
+      "location": "São Paulo, SP",
+      "start_date": "2016-01",
+      "end_date": "2018-01",
+      "current": false,
+      "technologies": ["JavaScript", "React", "Node.js", "MongoDB"],
+      "highlights": [
+        "Developed responsive web applications for 15+ clients using React and Node.js",
+        "Created automated testing suite achieving 90% code coverage across all client projects",
+        "Collaborated in agile team of 6 developers, delivering projects on time and within budget"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidade de São Paulo (USP)",
+      "degree": "Bachelor of Science in Computer Science",
+      "location": "São Paulo, SP",
+      "start_date": "2012-02",
+      "end_date": "2016-12",
+      "gpa": "3.7",
+      "honors": "Summa Cum Laude"
+    }
+  ],
+  "skills": {
+    "categories": [
+      {
+        "name": "Programming Languages",
+        "items": ["Python", "JavaScript", "TypeScript", "Go", "SQL", "C#", "C\\C++"]
+      },
+      {
+        "name": "Frameworks & Libraries",
+        "items": ["Django", "React", "FastAPI", "Express.js", "Pytest"]
+      },
+      {
+        "name": "Databases & Tools",
+        "items": ["PostgreSQL", "MongoDB", "Redis", "Kafka", "Docker", "Kubernetes"]
+      },
+      {
+        "name": "Cloud & DevOps",
+        "items": ["AWS", "Terraform", "GitHub Actions", "Prometheus", "Grafana", "C^2 (Care^2)"]
+      }
+    ]
+  },
+  "projects": [
+    {
+      "name": "FastAPI Admin",
+      "role": "Core contributor",
+      "start_date": "2023-01",
+      "end_date": "2024-06",
+      "description": "Admin panel integration for FastAPI applications with role-based access control and automatic CRUD generation",
+      "technologies": ["Python", "FastAPI", "SQLAlchemy"],
+      "url": "https://github.com/fastapi-admin/fastapi-admin",
+      "highlights": [
+        "Designed RBAC system supporting fine-grained permission assignment across 10+ resource types",
+        "Reduced boilerplate by 60% compared to manual admin panel implementation"
+      ]
+    },
+    {
+      "name": "Personal Blog Platform",
+      "description": "Full-stack blog platform with Markdown support, tag system, and analytics dashboard serving 5K monthly visitors",
+      "technologies": ["Next.js", "PostgreSQL", "Tailwind CSS"],
+      "url": "https://blog.joaosilva.dev"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Solutions Architect – Associate",
+      "issuer": "Amazon Web Services",
+      "date": "2023-06"
+    },
+    {
+      "name": "Certified Kubernetes Administrator (CKA)",
+      "issuer": "CNCF",
+      "date": "2022-11"
+    }
+  ],
+  "awards": [
+    {
+      "name": "Engineering Excellence Award",
+      "issuer": "TechCorp Solutions",
+      "date": "2023-12",
+      "description": "Recognized for architecture leadership in the microservices migration program"
+    }
+  ],
+  "volunteer": [
+    {
+      "organization": "Python Brasil",
+      "position": "Conference Track Chair",
+      "location": "Remote",
+      "start_date": "2022-01",
+      "end_date": null,
+      "current": true,
+      "highlights": [
+        "Curated 40+ talks for the annual Python Brasil conference with 500+ attendees",
+        "Established code of conduct enforcement process adopted by 3 regional meetups"
+      ]
+    }
+  ],
+  "languages": [
+    { "language": "Portuguese", "proficiency": "Native" },
+    { "language": "English", "proficiency": "Fluent (C2)" },
+    { "language": "Spanish", "proficiency": "Intermediate (B1)" }
+  ]
+}

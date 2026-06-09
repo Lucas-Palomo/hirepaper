@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hirepaper.local/schemas/content-tailor-plan.schema.json",
+  "title": "Content Tailor Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mode",
+    "inference",
+    "strategy_summary",
+    "target_role",
+    "structural_actions",
+    "rewrite_requests",
+    "section_decisions",
+    "warnings",
+    "grounding_notes"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": ["conservative", "rewrite"]
+    },
+    "inference": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "strategy_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposed_value", "rationale", "grounding"],
+      "properties": {
+        "proposed_value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grounding_ref"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "structural_actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/structural_action"
+      }
+    },
+    "rewrite_requests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rewrite_request"
+      }
+    },
+    "section_decisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/section_decision"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "grounding_notes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/grounding_note"
+      }
+    }
+  },
+  "$defs": {
+    "grounding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_type", "source_ref", "excerpt"],
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": ["candidate_json", "extra_context", "vacancy_text"]
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "grounding_note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim", "rationale", "grounding"],
+      "properties": {
+        "claim": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grounding_ref"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "structural_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_type",
+        "target_kind",
+        "target_refs",
+        "reason",
+        "grounding"
+      ],
+      "properties": {
+        "action_type": {
+          "type": "string",
+          "enum": [
+            "keep",
+            "remove",
+            "reorder",
+            "prioritize",
+            "deprioritize",
+            "replace_items"
+          ]
+        },
+        "target_kind": {
+          "type": "string",
+          "enum": [
+            "headline",
+            "summary",
+            "target_role",
+            "experience_entry",
+            "experience_bullet",
+            "project_entry",
+            "project_description",
+            "project_bullet",
+            "skill_category",
+            "skill_item",
+            "certification",
+            "award",
+            "volunteer_entry",
+            "language",
+            "link",
+            "extra_link",
+            "section"
+          ]
+        },
+        "target_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "replacement_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grounding_ref"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "rewrite_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_kind",
+        "target_refs",
+        "allowed_operation",
+        "instruction",
+        "grounding",
+        "confidence"
+      ],
+      "properties": {
+        "target_kind": {
+          "type": "string",
+          "enum": [
+            "headline",
+            "summary",
+            "target_role",
+            "experience_bullet",
+            "project_description",
+            "project_bullet"
+          ]
+        },
+        "target_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "allowed_operation": {
+          "type": "string",
+          "enum": ["rewrite_1_to_1", "rewrite_n_to_1"]
+        },
+        "instruction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grounding_ref"
+          },
+          "minItems": 1
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        }
+      }
+    },
+    "section_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section_name",
+        "decision",
+        "reason",
+        "grounding"
+      ],
+      "properties": {
+        "section_name": {
+          "type": "string",
+          "enum": [
+            "personal",
+            "summary",
+            "target_role",
+            "experience",
+            "education",
+            "skills",
+            "projects",
+            "certifications",
+            "awards",
+            "volunteer",
+            "languages",
+            "links",
+            "extra_links"
+          ]
+        },
+        "decision": {
+          "type": "string",
+          "enum": ["keep", "deprioritize", "remove"]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grounding_ref"
+          },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

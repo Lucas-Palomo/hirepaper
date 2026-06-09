@@ -1,0 +1,47 @@
+# Copy this file to `config.toml` if you want a local file-based override.
+# Any value set in `config.toml` overrides the corresponding environment
+# variable. If `config.toml` is absent, the CLI resolves LLM configuration
+# entirely from environment variables.
+#
+# Supported environment variables:
+#   LLM_BASE_URL
+#   LLM_API_KEY
+#   LLM_MODEL
+#   LLM_TEMPERATURE
+#   LLM_TIMEOUT_SECONDS
+#   LLM_MAX_TOKENS
+#   LLM_CONTENT_MATCH_TIMEOUT_SECONDS
+#   LLM_CONTENT_MATCH_MAX_TOKENS
+#   LLM_CONTENT_TAILOR_TIMEOUT_SECONDS
+#   LLM_CONTENT_TAILOR_MAX_TOKENS
+#   LLM_LINKEDIN_GENERATE_TIMEOUT_SECONDS
+#   LLM_LINKEDIN_GENERATE_MAX_TOKENS
+#
+# Resolution precedence:
+#   1. CLI flag override
+#   2. `--config <path>` TOML override, or `./config.toml` when present
+#   3. environment variables
+#   4. command fallback for content match / content tailor / linkedin generate
+#   5. built-in global defaults
+
+[llm]
+base_url = "http://localhost:4000/v1"
+model = "gpt-4.1"
+# api_key = "set-me-if-you-do-not-want-to-use LLM_API_KEY"
+
+[llm.defaults]
+temperature = 0.2
+timeout_seconds = 60
+max_tokens = 256
+
+[llm.content_match]
+timeout_seconds = 300
+max_tokens = 60000
+
+[llm.content_tailor]
+timeout_seconds = 300
+max_tokens = 60000
+
+[llm.linkedin_generate]
+timeout_seconds = 300
+max_tokens = 60000

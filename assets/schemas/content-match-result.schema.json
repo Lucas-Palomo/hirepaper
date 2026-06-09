@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hirepaper.local/schemas/content-match-result.schema.json",
+  "title": "Content Match Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "score",
+    "rating",
+    "verdict",
+    "summary",
+    "strengths",
+    "gaps",
+    "matched_requirements",
+    "unmatched_requirements",
+    "inferences",
+    "disclaimer"
+  ],
+  "properties": {
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "rating": {
+      "type": "string",
+      "enum": ["strong", "good", "partial", "weak", "poor"]
+    },
+    "verdict": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/strength"
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/gap"
+      }
+    },
+    "matched_requirements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirement"
+      }
+    },
+    "unmatched_requirements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/requirement"
+      }
+    },
+    "inferences": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/inference"
+      }
+    },
+    "disclaimer": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "strength": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "evidence"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "severity", "evidence"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement", "priority", "assessment", "confidence", "evidence"],
+      "properties": {
+        "requirement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["must_have", "should_have", "nice_to_have", "unknown"]
+        },
+        "assessment": {
+          "type": "string",
+          "enum": ["matched", "partially_matched", "not_matched", "unclear"]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "inference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim", "basis", "confidence"],
+      "properties": {
+        "claim": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        }
+      }
+    }
+  }
+}

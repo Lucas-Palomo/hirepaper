@@ -1,0 +1,16 @@
+[project]
+name = "hirepaper"
+version = "0.1.0"
+description = "JSON → LaTeX → PDF resume generator"
+requires-python = ">=3.10"
+dependencies = ["typer", "litellm", "tomli; python_version < '3.11'"]
+
+[project.scripts]
+hirepaper = "hirepaper.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"

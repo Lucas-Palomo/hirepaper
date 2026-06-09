@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# hirepaper — Root-level entry point
+#
+# Usage: ./hirepaper [command] [options]
+#
+# Delegates to the packaged hirepaper CLI in dist/.
+#
+# Examples:
+#   ./hirepaper pdf generate data/candidate.json -o output/resume.pdf --locale en
+#   ./hirepaper pdf check output/resume.pdf
+#   ./hirepaper content lint data/candidate.json
+#   ./hirepaper doctor
+#   ./hirepaper --help
+
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+exec "${ROOT}/dist/hirepaper" "$@"

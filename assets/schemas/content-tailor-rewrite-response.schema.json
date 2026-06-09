@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hirepaper.local/schemas/content-tailor-rewrite-response.schema.json",
+  "title": "Content Tailor Rewrite Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_refs",
+    "target_refs",
+    "operation",
+    "rewrites",
+    "grounding",
+    "confidence"
+  ],
+  "properties": {
+    "request_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "target_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "operation": {
+      "type": "string",
+      "enum": ["1_to_1", "n_to_1"]
+    },
+    "rewrites": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "grounding": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/grounding_ref"
+      },
+      "minItems": 1
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "grounding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_type", "source_ref", "excerpt"],
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": ["candidate_json", "extra_context", "vacancy_text"]
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

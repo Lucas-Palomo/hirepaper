@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hirepaper.local/schemas/content-tailor-report.schema.json",
+  "title": "Content Tailor Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "disclaimer",
+    "mode",
+    "inference",
+    "summary",
+    "target_role",
+    "key_changes",
+    "rewrites",
+    "removed_or_deprioritized_sections",
+    "grounding_notes",
+    "lint_status_before",
+    "lint_status_after",
+    "warnings"
+  ],
+  "properties": {
+    "disclaimer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["conservative", "rewrite"]
+    },
+    "inference": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "key_changes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/change_item"
+      }
+    },
+    "rewrites": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rewrite_item"
+      }
+    },
+    "removed_or_deprioritized_sections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/section_item"
+      }
+    },
+    "grounding_notes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/grounding_note"
+      }
+    },
+    "lint_status_before": {
+      "$ref": "#/$defs/lint_status"
+    },
+    "lint_status_after": {
+      "$ref": "#/$defs/lint_status"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "change_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "details"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "rewrite_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_kind", "target_refs", "summary", "grounding"],
+      "properties": {
+        "target_kind": {
+          "type": "string",
+          "enum": [
+            "headline",
+            "summary",
+            "target_role",
+            "experience_bullet",
+            "project_description",
+            "project_bullet"
+          ]
+        },
+        "target_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grounding": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "section_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["section_name", "decision", "reason"],
+      "properties": {
+        "section_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "type": "string",
+          "enum": ["removed", "deprioritized"]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "grounding_note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim", "source_summary"],
+      "properties": {
+        "claim": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_summary": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "lint_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "ok", "warn", "fail", "warning_summaries", "failure_summaries"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pass", "warning", "fail"]
+        },
+        "ok": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warn": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warning_summaries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "failure_summaries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

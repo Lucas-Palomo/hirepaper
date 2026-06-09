@@ -1,0 +1,458 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hirepaper.local/schemas/candidate.schema.json",
+  "title": "Candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "personal"
+  ],
+  "properties": {
+    "personal": {
+      "$ref": "#/$defs/personal"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "target_role": {
+      "type": ["string", "null"]
+    },
+    "experience": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/experience"
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/education"
+      }
+    },
+    "skills": {
+      "$ref": "#/$defs/skills"
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/project"
+      }
+    },
+    "certifications": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/certification"
+      }
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/language"
+      }
+    },
+    "awards": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/award"
+      }
+    },
+    "volunteer": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/volunteer"
+      }
+    }
+  },
+  "$defs": {
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "url"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "phone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "hyperlink"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hyperlink": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "personal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "email",
+        "phone",
+        "location"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "email": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phone": {
+          "$ref": "#/$defs/phone"
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "headline": {
+          "type": ["string", "null"]
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        "extra_links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        }
+      }
+    },
+    "achievement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "situation": {
+          "type": "string"
+        },
+        "task": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "experience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company",
+        "position",
+        "location",
+        "start_date",
+        "current"
+      ],
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1
+        },
+        "position": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "end_date": {
+          "type": ["string", "null"]
+        },
+        "current": {
+          "type": "boolean"
+        },
+        "technologies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "role_summary": {
+          "type": ["string", "null"]
+        },
+        "scope": {
+          "type": ["string", "null"]
+        },
+        "employment_type": {
+          "type": ["string", "null"]
+        },
+        "achievements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/achievement"
+          }
+        },
+        "highlights": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "education": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "institution",
+        "degree",
+        "location",
+        "start_date",
+        "end_date"
+      ],
+      "properties": {
+        "institution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "degree": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "end_date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gpa": {
+          "type": ["string", "null"]
+        },
+        "honors": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "skill_category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "items"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "categories"
+      ],
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/skill_category"
+          }
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "role": {
+          "type": ["string", "null"]
+        },
+        "start_date": {
+          "type": ["string", "null"]
+        },
+        "end_date": {
+          "type": ["string", "null"]
+        },
+        "technologies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "url": {
+          "type": ["string", "null"]
+        },
+        "highlights": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "certification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "issuer",
+        "date"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "issuer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "language": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language",
+        "proficiency"
+      ],
+      "properties": {
+        "language": {
+          "type": "string",
+          "minLength": 1
+        },
+        "proficiency": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "award": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "issuer",
+        "date"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "issuer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "volunteer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organization",
+        "position",
+        "location",
+        "start_date",
+        "current"
+      ],
+      "properties": {
+        "organization": {
+          "type": "string",
+          "minLength": 1
+        },
+        "position": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "end_date": {
+          "type": ["string", "null"]
+        },
+        "current": {
+          "type": "boolean"
+        },
+        "highlights": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

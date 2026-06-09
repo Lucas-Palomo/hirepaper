@@ -1,0 +1,136 @@
+{
+  "personal": {
+    "name": "Your Name",
+    "headline": "Optional: Professional Title — Area of Expertise",
+    "email": "you@email.com",
+    "phone": {
+      "value": "+55 11 99999-9999",
+      "hyperlink": "https://wa.me/5511999999999"
+    },
+    "location": "City, State",
+    "links": [
+      { "label": "LinkedIn", "url": "https://linkedin.com/in/yourprofile" },
+      { "label": "GitHub", "url": "https://github.com/yourprofile" }
+    ],
+    "extra_links": [
+      { "label": "Portfolio", "url": "https://yourportfolio.dev" }
+    ]
+  },
+  "target_role": "Target Position Title",
+  "summary": "Professional summary or objective statement. Keep it concise and focused on your value proposition.",
+  "experience": [
+    {
+      "company": "Company Name",
+      "position": "Job Title",
+      "location": "City, State",
+      "start_date": "2021-03",
+      "end_date": null,
+      "current": true,
+      "technologies": ["Tech1", "Tech2", "Tech3"],
+      "role_summary": "Optional: one-line team or domain context",
+      "achievements": [
+        {
+          "action": "What you did",
+          "result": "What happened as a result",
+          "metrics": "Optional measurable impact"
+        },
+        {
+          "summary": "Or use a single summary instead of STAR fields"
+        }
+      ],
+      "highlights": [
+        "Falls back to simple bullet points when achievements is empty"
+      ]
+    },
+    {
+      "company": "Previous Company",
+      "position": "Previous Role",
+      "location": "City, State",
+      "start_date": "2018-02",
+      "end_date": "2021-02",
+      "current": false,
+      "technologies": ["TechA", "TechB"],
+      "highlights": [
+        "Accomplishment description with measurable result",
+        "Another achievement or responsibility"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University Name",
+      "degree": "Degree Title",
+      "location": "City, State",
+      "start_date": "2014-02",
+      "end_date": "2018-12",
+      "gpa": "3.7",
+      "honors": "Optional: Magna Cum Laude, Dean's List, etc."
+    }
+  ],
+  "skills": {
+    "categories": [
+      {
+        "name": "Category Name",
+        "items": ["Skill A", "Skill B", "Skill C"]
+      },
+      {
+        "name": "Another Category",
+        "items": ["Skill X", "Skill Y", "Skill Z"]
+      }
+    ]
+  },
+  "projects": [
+    {
+      "name": "Project Name",
+      "role": "Your role (optional)",
+      "start_date": "2023-01",
+      "end_date": "2024-06",
+      "description": "Brief description of the project, its purpose, and your contribution.",
+      "technologies": ["Tech1", "Tech2"],
+      "url": "https://project.url",
+      "highlights": [
+        "Specific achievement or contribution",
+        "Another highlight"
+      ]
+    },
+    {
+      "name": "Simpler Project",
+      "description": "Projects can also have just name, description and tech.",
+      "technologies": ["Stack"],
+      "url": "https://github.com/yourprofile/project"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certification Name",
+      "issuer": "Issuing Organization",
+      "date": "2023-06"
+    }
+  ],
+  "awards": [
+    {
+      "name": "Award Name",
+      "issuer": "Issuing Entity",
+      "date": "2023-12",
+      "description": "Optional context about the award"
+    }
+  ],
+  "volunteer": [
+    {
+      "organization": "Organization Name",
+      "position": "Role",
+      "location": "Remote or City",
+      "start_date": "2022-01",
+      "end_date": null,
+      "current": true,
+      "highlights": [
+        "What you accomplished as a volunteer",
+        "Another contribution"
+      ]
+    }
+  ],
+  "languages": [
+    { "language": "Your Language", "proficiency": "Native" },
+    { "language": "Another Language", "proficiency": "Fluent (C1)" }
+  ]
+}

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# hirepaper-dev — Source-based entry point for development
+#
+# Usage: ./hirepaper-dev [command] [options]
+#
+# Runs directly from source (via PYTHONPATH), bypassing the packaged binary.
+# Useful for testing changes without rebuilding.
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+export PYTHONPATH="${ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
+
+if [ -x "${ROOT}/.venv/bin/python3" ]; then
+    PYTHON="${ROOT}/.venv/bin/python3"
+elif [ -x "${ROOT}/.venv/bin/python" ]; then
+    PYTHON="${ROOT}/.venv/bin/python"
+else
+    PYTHON="python3"
+fi
+
+exec "$PYTHON" -m hirepaper "$@"

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+*.spec
+
+# Build / packaging
+dist/
+build/
+*.aux
+*.log
+*.out
+*.toc
+missfont.log
+texput.log
+
+# Project runtime
+output/
+logs/
+tmp/
+config.toml
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI
+.codex
+.agents

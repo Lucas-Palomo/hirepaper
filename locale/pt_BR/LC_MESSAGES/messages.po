@@ -1,0 +1,93 @@
+# Brazilian Portuguese translations for hirepaper
+# Copyright (C) 2026
+#
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
+
+msgid "section.profile"
+msgstr "Perfil"
+
+msgid "section.experience"
+msgstr "Experiência"
+
+msgid "section.education"
+msgstr "Formação"
+
+msgid "section.skills"
+msgstr "Habilidades"
+
+msgid "section.projects"
+msgstr "Projetos"
+
+msgid "section.certifications"
+msgstr "Certificações"
+
+msgid "section.languages"
+msgstr "Idiomas"
+
+msgid "section.awards"
+msgstr "Prêmios"
+
+msgid "section.volunteer"
+msgstr "Voluntariado"
+
+msgid "label.present"
+msgstr "Atualmente"
+
+msgid "label.gpa"
+msgstr "GPA"
+
+msgid "section.links"
+msgstr "Links"
+
+msgid "label.email"
+msgstr "E-mail"
+
+msgid "label.phone"
+msgstr "Telefone"
+
+msgid "label.location"
+msgstr "Localização"
+
+msgid "label.employment_type"
+msgstr "Tipo"
+
+msgid "month.01"
+msgstr "jan"
+
+msgid "month.02"
+msgstr "fev"
+
+msgid "month.03"
+msgstr "mar"
+
+msgid "month.04"
+msgstr "abr"
+
+msgid "month.05"
+msgstr "mai"
+
+msgid "month.06"
+msgstr "jun"
+
+msgid "month.07"
+msgstr "jul"
+
+msgid "month.08"
+msgstr "ago"
+
+msgid "month.09"
+msgstr "set"
+
+msgid "month.10"
+msgstr "out"
+
+msgid "month.11"
+msgstr "nov"
+
+msgid "month.12"
+msgstr "dez"

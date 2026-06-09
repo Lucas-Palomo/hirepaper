@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hirepaper.dev/schemas/linkedin-report.schema.json",
+  "title": "LinkedIn Report Schema",
+  "type": "object",
+  "required": [
+    "disclaimer",
+    "profile_focus",
+    "headline",
+    "about",
+    "top_skills",
+    "experience_highlights",
+    "project_highlights",
+    "keywords",
+    "cautions",
+    "grounding_notes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "disclaimer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_focus": {
+      "type": "string",
+      "minLength": 1
+    },
+    "headline": {
+      "type": "object",
+      "required": ["recommended", "rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "recommended": { "type": "string", "minLength": 1 },
+        "rationale": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "about": {
+      "type": "object",
+      "required": ["recommended", "rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "recommended": { "type": "string", "minLength": 1 },
+        "rationale": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "top_skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "experience_highlights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["experience_ref"],
+        "additionalProperties": false,
+        "properties": {
+          "experience_ref": { "type": "string", "minLength": 1 },
+          "recommended_emphasis": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "optional_rewrite": { "type": "string" }
+        }
+      }
+    },
+    "project_highlights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["project_ref"],
+        "additionalProperties": false,
+        "properties": {
+          "project_ref": { "type": "string", "minLength": 1 },
+          "recommended_emphasis": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "optional_rewrite": { "type": "string" }
+        }
+      }
+    },
+    "keywords": {
+      "type": "object",
+      "required": ["prioritize", "avoid"],
+      "additionalProperties": false,
+      "properties": {
+        "prioritize": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "avoid": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "cautions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "grounding_notes": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
