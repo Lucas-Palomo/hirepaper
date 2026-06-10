@@ -412,15 +412,21 @@ def _render_experience(experiences: list[Experience], locale: Locale, policy: De
         lines: list[str] = []
         end = locale.get("label.present") if exp.current else _format_date(exp.end_date, locale)
         date_range = f"{_format_date(exp.start_date, locale)} -- {end}"
+
+        left_parts = [exp.location] if exp.location else []
+        if exp.employment_type:
+            left_parts.append(exp.employment_type)
+        left_meta = _escape_tex(" | ".join(left_parts))
+
         lines.append(
             "\\resumeEntry{"
             f"\\mbox{{{_escape_tex(exp.company)}}}"
             "}{"
-            f"\\mbox{{{_escape_tex(exp.position)}}}"
+            f"{_escape_tex(exp.position)}"
             "}{"
             f"{date_range}"
             "}{"
-            f"{_escape_tex(exp.location)}"
+            f"{left_meta}"
             "}"
         )
 
@@ -431,9 +437,6 @@ def _render_experience(experiences: list[Experience], locale: Locale, policy: De
 
         if policy.show_role_summary and exp.role_summary:
             lines.append(f"\\resumeEntrySub{{\\textit{{{_escape_tex(exp.role_summary)}}}}}")
-
-        if exp.employment_type:
-            lines.append(f"\\resumeEntrySub{{{locale.get('label.employment_type')}: {_escape_tex(exp.employment_type)}}}")
 
         bullets: list[str] = []
         if exp.achievements:
@@ -461,7 +464,7 @@ def _render_education(education: list[Education], locale: Locale) -> str:
             "\\resumeEntry{"
             f"\\mbox{{{_escape_tex(edu.degree)}}}"
             "}{"
-            f"\\mbox{{{_escape_tex(edu.institution)}}}"
+            f"{_escape_tex(edu.institution)}"
             "}{"
             f"{date_range}"
             "}{"
@@ -520,7 +523,7 @@ def _render_projects(projects: list[Project], locale: Locale, policy: DensityPol
             "\\resumeEntry{"
             f"\\mbox{{{_escape_tex(proj.name)}}}"
             "}{"
-            f"\\mbox{{{_escape_tex(proj.role or '')}}}"
+            f"{_escape_tex(proj.role or '')}"
             "}{"
             f"{date_range}"
             "}{"
@@ -590,7 +593,7 @@ def _render_volunteer(volunteer: list[VolunteerExperience], locale: Locale, poli
             "\\resumeVolunteer{"
             f"\\mbox{{{_escape_tex(v.organization)}}}"
             "}{"
-            f"\\mbox{{{_escape_tex(v.position)}}}"
+            f"{_escape_tex(v.position)}"
             "}{"
             f"{date_range}"
             "}{"
