@@ -4,7 +4,8 @@ Important paths in the `hirepaper` project.
 
 ## Source Layout
 
-- `src/hirepaper/cli.py`: Typer CLI with top-level `init` and `doctor` commands plus subcommand groups (`content`, `pdf`, `llm`), build orchestration.
+- `src/hirepaper/api.py`: Public library API with typed request/response types. Provides importable workflow functions for PDF generation, content lint, content match, content tailor, LinkedIn generate, bootstrap helpers, and PDF check. CLI commands delegate to this layer.
+- `src/hirepaper/cli.py`: Typer CLI with top-level `init` and `doctor` commands plus subcommand groups (`content`, `pdf`, `llm`, `linkedin`). Thin adapter over the `api.py` layer — argument parsing, terminal rendering, and exit-code mapping only.
   - `hirepaper init` — bootstraps a local `config.toml` from the bundled template.
   - `hirepaper doctor` — canonical environment diagnostics and dependency checks.
   - `hirepaper help`, `hirepaper content help`, `hirepaper pdf help`, `hirepaper llm help` — explicit help aliases.

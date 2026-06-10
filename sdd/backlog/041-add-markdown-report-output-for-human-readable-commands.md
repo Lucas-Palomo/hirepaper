@@ -1,7 +1,7 @@
 # 041 - Add Markdown report output for human-readable report commands
 
 ## Status
-Planned
+Completed
 
 ## Context
 The project already exposes multiple commands that return a structured result in

@@ -1,7 +1,7 @@
 # 040 - Add `linkedin` command group and `linkedin generate` report workflow
 
 ## Status
-Planned
+Completed
 
 ## Context
 The project already has a clear core identity:

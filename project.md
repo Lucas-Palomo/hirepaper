@@ -1,12 +1,19 @@
 # Project Context
 
 ## Overview
-`hirepaper` is a Python CLI that generates ATS-safe resume PDFs from structured JSON.
+`hirepaper` is a Python library and CLI that generates ATS-safe resume PDFs from structured JSON.
 
 The pipeline is:
 
 ```text
 candidate JSON -> Python data model -> LaTeX template/class -> LuaLaTeX PDF -> pdf check
+```
+
+Architecture:
+
+```
+public API (hirepaper.api)  →  shared workflow services  →  formatters / renderers / file I/O
+CLI commands (hirepaper.cli) →  thin adapter over public API
 ```
 
 The project is no longer a blank slate. Treat the current schema, templates,
@@ -136,6 +143,11 @@ dist/hirepaper
 After tasks that touch runtime code, templates, assets, locale behavior,
 generation, validation, or packaging, rebuild the binary and smoke-test
 `./hirepaper`.
+
+## Source Layout
+
+- `src/hirepaper/api.py`: Public library API with typed request/response dataclasses and importable workflow functions.
+- `src/hirepaper/cli.py`: Thin CLI adapter over the API layer. Parses arguments, renders terminal output, maps exceptions to exit codes.
 
 ## Documentation Flow
 Use `sdd/backlog/` for planned work and `sdd/history/` for completed work.

@@ -107,6 +107,7 @@ pip install -r requirements.txt
 - [docs/content-tailor.md](docs/content-tailor.md) — `content tailor` detailed usage
 - [docs/content-match.md](docs/content-match.md) — `content match` detailed usage
 - [docs/file-map.md](docs/file-map.md) — source layout and important paths
+- [docs/library.md](docs/library.md) — using `hirepaper` as an importable Python library
 - [agents.md](agents.md) — agent execution rules
 - [sdd/backlog/](sdd/backlog/) — planned tasks
 - [sdd/history/](sdd/history/) — completed task records
