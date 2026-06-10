@@ -1,24 +1,36 @@
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
-from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 
 import typer
 
-from ._resources import config_template_path, example_candidate_path, icons_dir, templates_dir
-from .ats_check import check_pdf
-from .content_lint import lint_candidate
-from .density import DENSITY_MAP
-from .loader import load_candidate
-from .log_archive import LogArchiveError, StagedLogArchive
-from .generator import generate_latex
-from .locale import Locale
+# Kept locally because doctor is explicitly out of scope for the API refactor.
+# Do not use in CLI commands; use the API layer instead.
+def _latex_env(build_dir: Path) -> dict[str, str]:
+    env = os.environ.copy()
+    xdg_cache_home = build_dir / "xdg-cache"
+    texmf_var = build_dir / "texmf-var"
+    xdg_cache_home.mkdir(parents=True, exist_ok=True)
+    texmf_var.mkdir(parents=True, exist_ok=True)
+    env["XDG_CACHE_HOME"] = str(xdg_cache_home)
+    env["TEXMFVAR"] = str(texmf_var)
+    env["TEXMFCACHE"] = str(texmf_var)
+    return env
 
 
+from .api import (
+    PDFGenerateError,
+    bootstrap_candidate_file,
+    bootstrap_config_file,
+    check_pdf_file,
+    generate_pdf_file,
+    lint_candidate_file,
+    match_candidate_file,
+    tailor_candidate_file,
+    generate_linkedin_report_file,
+)
 def _show_group_help(ctx: typer.Context) -> None:
     if ctx.invoked_subcommand is None:
         typer.echo(ctx.get_help())
@@ -87,257 +99,29 @@ def llm_help(ctx: typer.Context) -> None:
 def linkedin_help(ctx: typer.Context) -> None:
     _show_explicit_help(ctx)
 
-_LAYOUT_MAP: dict[str, dict[str, str]] = {
-    "standard": {"tex": "standard.tex", "cls": "standard.cls"},
-}
-
-
-@dataclass
-class PDFBuildResult:
-    exit_code: int
-    build_status: str
-    artifact_validation_status: str
-    validation_message: str = ""
-
-
-def _utcnow_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def _latex_env(build_dir: Path) -> dict[str, str]:
-    env = os.environ.copy()
-    xdg_cache_home = build_dir / "xdg-cache"
-    texmf_var = build_dir / "texmf-var"
-    xdg_cache_home.mkdir(parents=True, exist_ok=True)
-    texmf_var.mkdir(parents=True, exist_ok=True)
-    env["XDG_CACHE_HOME"] = str(xdg_cache_home)
-    env["TEXMFVAR"] = str(texmf_var)
-    env["TEXMFCACHE"] = str(texmf_var)
-    return env
-
-
-def _convert_icons(build_dir: Path) -> None:
-    for svg_path in sorted(icons_dir().glob("*.svg")):
-        pdf_path = build_dir / f"{svg_path.stem}.pdf"
-        subprocess.run(
-            ["rsvg-convert", "-f", "pdf", "-o", str(pdf_path), str(svg_path)],
-            capture_output=True, text=True,
-        )
-
-
-def _stage_pdf_build_logs(
-    archive: StagedLogArchive | None,
-    build_dir: Path,
-    cls_stem: str,
-    candidate_path: Path,
-    engine_stdout: str,
-    engine_stderr: str,
-) -> list[str]:
-    if archive is None:
-        return []
-
-    archive.copy_file(candidate_path, "candidate.json")
-    archive.copy_file(build_dir / "resume.tex", "resume.tex")
-    archive.copy_file(build_dir / f"{cls_stem}.cls", f"{cls_stem}.cls")
-
-    for icon_pdf in sorted(build_dir.glob("*.pdf")):
-        if icon_pdf.name == "resume.pdf":
-            continue
-        archive.copy_file(icon_pdf, Path("icons") / icon_pdf.name)
-
-    for artifact in sorted(build_dir.glob("resume.*")):
-        archive.copy_file(artifact, artifact.name)
-
-    archive.write_text("engine-stdout.log", engine_stdout or "")
-    archive.write_text("engine-stderr.log", engine_stderr or "")
-    return archive.list_members()
-
-
-def _validate_pdf_artifact(pdf_path: Path) -> tuple[bool, str]:
-    r = subprocess.run(["pdftotext", str(pdf_path), "-"], capture_output=True, text=True)
-    if r.returncode != 0 or not r.stdout.strip():
-        return False, "PDF has no extractable text (build may have failed; check luaotfload/fontspec)"
-    r = subprocess.run(["pdffonts", str(pdf_path)], capture_output=True, text=True)
-    if r.returncode != 0:
-        return False, "Font inspection failed (pdffonts error)"
-    lines = r.stdout.splitlines()
-    if len(lines) < 3:
-        return False, "No fonts listed in PDF (font loading may have failed)"
-    has_type3 = False
-    has_font = False
-    for line in lines[2:]:
-        if not line.strip():
-            continue
-        has_font = True
-        if "Type 3" in line:
-            has_type3 = True
-    if not has_font:
-        return False, "No embedded fonts found in PDF"
-    if has_type3:
-        return False, "PDF contains Type 3 fonts (ATS-unsafe)"
-    return True, ""
-
-
-def _build_pdf(
-    tex_content: str,
-    cls_content: str,
-    cls_stem: str,
-    candidate_path: Path,
-    pdf_dst: Path,
-    log_archive: StagedLogArchive | None = None,
-    engine: str = "lualatex",
-) -> PDFBuildResult:
-    with tempfile.TemporaryDirectory(prefix="hirepaper-") as tmp:
-        build = Path(tmp)
-        tex_path = build / "resume.tex"
-        cls_path = build / f"{cls_stem}.cls"
-        latex_env = _latex_env(build)
-        tex_path.write_text(tex_content, encoding="utf-8")
-        cls_path.write_text(cls_content, encoding="utf-8")
-        _convert_icons(build)
-
-        result = subprocess.run(
-            [engine, "-interaction=nonstopmode", tex_path.name],
-            cwd=build,
-            capture_output=True,
-            text=True,
-            errors="replace",
-            env=latex_env,
-        )
-
-        _stage_pdf_build_logs(
-            log_archive,
-            build,
-            cls_stem,
-            candidate_path,
-            result.stdout or "",
-            result.stderr or "",
-        )
-
-        pdf_path = build / "resume.pdf"
-        if pdf_path.exists() and pdf_path.stat().st_size > 0:
-            pdf_dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(pdf_path, pdf_dst)
-
-            valid, msg = _validate_pdf_artifact(pdf_dst)
-            if not valid:
-                return PDFBuildResult(
-                    exit_code=2,
-                    build_status="success",
-                    artifact_validation_status="failed",
-                    validation_message=msg,
-                )
-
-            return PDFBuildResult(
-                exit_code=0,
-                build_status="success",
-                artifact_validation_status="passed",
-            )
-
-    return PDFBuildResult(
-        exit_code=1,
-        build_status="failed",
-        artifact_validation_status="not_run",
-    )
-
 
 # ---------------------------------------------------------------------------
-# Shared command implementations
+# Shared command implementations (thin adapters over the API layer)
 # ---------------------------------------------------------------------------
 
 def _cmd_generate(
     input: Path, output: str, locale: str, density: str, layout: str, log: str | None,
 ) -> None:
-    if not input.exists():
-        typer.echo(f"Error: input file not found: {input}", err=True)
-        raise typer.Exit(code=1)
-
     try:
-        candidate = load_candidate(input)
-    except (ValueError, KeyError) as e:
-        typer.echo(f"Error: invalid input data — {e}", err=True)
-        raise typer.Exit(code=1)
-
-    try:
-        locale_obj = Locale(locale)
-    except FileNotFoundError:
-        typer.echo(f"Error: locale '{locale}' not found", err=True)
-        raise typer.Exit(code=1)
-
-    if density not in DENSITY_MAP:
-        typer.echo(f"Error: unknown density '{density}' (choose from: {', '.join(DENSITY_MAP)})", err=True)
-        raise typer.Exit(code=1)
-
-    if layout not in _LAYOUT_MAP:
-        typer.echo(
-            f"Error: unknown layout '{layout}' "
-            "(current supported value: standard; --layout is reserved for future layouts)",
-            err=True,
+        result = generate_pdf_file(
+            input, output,
+            locale=locale, density=density, layout=layout,
+            log=log,
         )
+    except PDFGenerateError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
+    except FileNotFoundError as e:
+        typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
 
-    pdf_dst = Path(output)
-    pdf_dst.parent.mkdir(parents=True, exist_ok=True)
-    if not pdf_dst.parent.exists() or not os.access(pdf_dst.parent, os.W_OK):
-        typer.echo(f"Error: output directory is not writable: {pdf_dst.parent}", err=True)
-        raise typer.Exit(code=1)
-
-    layout_files = _LAYOUT_MAP[layout]
-    cls_path = templates_dir() / layout_files["cls"]
-    tex_path = templates_dir() / layout_files["tex"]
-    if not cls_path.exists() or not tex_path.exists():
-        typer.echo(f"Error: layout files not found for '{layout}'", err=True)
-        raise typer.Exit(code=1)
-
-    latex = generate_latex(candidate, locale=locale_obj, density=density, template_path=tex_path)
-    cls_content = cls_path.read_text(encoding="utf-8")
-
-    cls_stem = Path(layout_files["cls"]).stem
-    build_result: PDFBuildResult
-    archive_members: list[str] = []
-
-    if log:
-        try:
-            with StagedLogArchive(log, prefix="hirepaper-pdf-log-") as archive:
-                build_result = _build_pdf(
-                    latex,
-                    cls_content,
-                    cls_stem,
-                    input,
-                    pdf_dst,
-                    log_archive=archive,
-                )
-                meta = {
-                    "command": (
-                        f"hirepaper pdf generate {input} --output {output} "
-                        f"--locale {locale} --density {density} --layout {layout} --log {log}"
-                    ),
-                    "timestamp_utc": _utcnow_iso(),
-                    "input_path": str(input),
-                    "output_path": str(pdf_dst),
-                    "log_path": log,
-                    "candidate_name": candidate.personal.name,
-                    "locale": locale,
-                    "density": density,
-                    "layout": layout,
-                    "engine": "lualatex",
-                    "log_archive_format": "zip",
-                    "build_status": build_result.build_status,
-                    "artifact_validation_status": build_result.artifact_validation_status,
-                    "validation_message": build_result.validation_message,
-                }
-                archive.write_json("meta.json", meta)
-                archive_members = archive.list_members()
-                archive.write_json("meta.json", {**meta, "artifacts_included": archive_members})
-                archive.finalize()
-        except LogArchiveError as e:
-            typer.echo(f"Error: {e}", err=True)
-            raise typer.Exit(code=1)
-    else:
-        build_result = _build_pdf(latex, cls_content, cls_stem, input, pdf_dst)
-
-    if build_result.exit_code == 0:
-        typer.echo(f"Generated: {pdf_dst}")
+    if result.build_status == "success" and result.artifact_validation_status == "passed":
+        typer.echo(f"Generated: {result.output_path}")
         if log:
             typer.echo("", err=True)
             typer.echo(f"Log archive saved: {log}", err=True)
@@ -345,9 +129,9 @@ def _cmd_generate(
                 "WARNING: Log archive may contain candidate data, rendered LaTeX, and compiler diagnostics.",
                 err=True,
             )
-    elif build_result.exit_code == 2:
+    elif result.build_status == "success" and result.artifact_validation_status == "failed":
         typer.echo("PDF generation produced an invalid artifact", err=True)
-        typer.echo("  - text extraction or font embedding validation failed", err=True)
+        typer.echo(f"  - {result.validation_message}", err=True)
         if log:
             typer.echo(f"Log archive saved: {log}", err=True)
             typer.echo("Check the archive for luaotfload, fontspec, or artifact validation details", err=True)
@@ -361,22 +145,30 @@ def _cmd_generate(
 
 
 def _cmd_pdf_check(pdf: Path) -> None:
-    if not pdf.exists():
-        typer.echo(f"Error: file not found: {pdf}", err=True)
+    try:
+        exit_code = check_pdf_file(pdf)
+    except PDFGenerateError as e:
+        typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
-    sys.exit(check_pdf(pdf))
+    sys.exit(exit_code)
 
 
 def _cmd_content_lint(input: Path) -> None:
-    if not input.exists():
-        typer.echo(f"Error: input file not found: {input}", err=True)
-        raise typer.Exit(code=1)
     try:
-        candidate = load_candidate(input)
+        result = lint_candidate_file(input)
+    except FileNotFoundError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
     except (ValueError, KeyError) as e:
         typer.echo(f"Error: invalid input data — {e}", err=True)
         raise typer.Exit(code=1)
-    sys.exit(lint_candidate(candidate))
+
+    for msg in result.messages:
+        typer.echo(msg)
+
+    if result.fail > 0:
+        raise typer.Exit(code=1)
+    raise typer.Exit(code=0)
 
 
 # ---------------------------------------------------------------------------
@@ -589,30 +381,12 @@ def content_init(
         help="Overwrite the destination file if it already exists",
     ),
 ):
-    """Bootstrap a starter candidate JSON file from the bundled example."""
-
-    src = example_candidate_path()
-    if not src.exists():
-        typer.echo(f"Error: example candidate template not found at {src}", err=True)
-        raise typer.Exit(code=1)
-
-    dst = Path(output)
-    if dst.exists() and not force:
-        typer.echo(
-            f"Error: candidate file already exists: {dst}\n"
-            f"Use --force to overwrite it or --output to choose another path.",
-            err=True,
-        )
-        raise typer.Exit(code=1)
-
     try:
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
-    except OSError as e:
-        typer.echo(f"Error: cannot write candidate file: {dst} — {e}", err=True)
+        path = bootstrap_candidate_file(output, force=force)
+    except (FileNotFoundError, FileExistsError, OSError) as e:
+        typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
-
-    typer.echo(f"Created: {dst}")
+    typer.echo(f"Created: {path}")
     typer.echo("This is a starter example candidate. Edit it and validate with `hirepaper content lint`.")
 
 
@@ -749,49 +523,24 @@ def _cmd_content_match(
     max_tokens: int | None,
     verbose: int,
 ) -> None:
-    from .llm.config import LLMConfigError, load_config
-    from .content_match import (
-        ContentMatchError,
-        MatchPolicy,
-        load_prompt,
-        run_match,
-    )
+    from .content_match import ContentMatchError
 
     if format not in ("text", "md", "json"):
         typer.echo(f"Error: unsupported --format '{format}' (supported: text, md, json)", err=True)
         raise typer.Exit(code=1)
 
     try:
-        cfg = load_config(config_path, profile="content_match")
-    except LLMConfigError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
-
-    policy = MatchPolicy(strict=strict, inference=inference, locale=locale)
-    try:
-        policy.validate()
-    except ContentMatchError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
-
-    prompt_source = "custom" if prompt else "default"
-    try:
-        prompt_text = load_prompt(prompt)
-    except ContentMatchError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
-
-    try:
-        report, validated, meta = run_match(
-            candidate_path=str(candidate),
-            vacancy_path=str(vacancy),
-            config=cfg,
-            policy=policy,
-            prompt_source=prompt_source,
-            prompt_text=prompt_text,
+        report, validated, meta = match_candidate_file(
+            candidate_path=candidate,
+            vacancy_path=vacancy,
+            config_path=config_path,
+            locale=locale,
             format=format,
-            output_path=output,
-            log_path=log,
+            output=output,
+            log=log,
+            prompt=prompt,
+            strict=strict,
+            inference=inference,
             timeout_seconds=timeout_seconds,
             max_tokens=max_tokens,
             verbose=verbose,
@@ -948,6 +697,8 @@ def _cmd_content_tailor(
     quiet: bool,
     verbose: int,
 ) -> None:
+    from .content_tailor import ContentTailorError
+
     if report_format not in ("text", "md", "json"):
         typer.echo(f"Error: unsupported --report-format '{report_format}' (supported: text, md, json)", err=True)
         raise typer.Exit(code=1)
@@ -992,36 +743,20 @@ def _cmd_content_tailor(
                 )
                 raise typer.Exit(code=1)
 
-    from .llm.config import LLMConfigError, load_config
-    from .content_tailor import ContentTailorError, load_prompt, run_tailor
-
-    prompt_source = "custom" if prompt else "default"
     try:
-        prompt_text = load_prompt(prompt)
-    except ContentTailorError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
-
-    try:
-        cfg = load_config(config_path, profile="content_tailor")
-    except LLMConfigError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
-
-    try:
-        report_str, report_data, meta = run_tailor(
-            candidate_path=str(candidate),
-            vacancy_path=str(vacancy),
-            config=cfg,
+        report_str, report_data, meta = tailor_candidate_file(
+            candidate_path=candidate,
+            vacancy_path=vacancy,
+            output=output,
+            config_path=config_path,
+            locale=locale,
             mode=mode,
             inference=inference,
-            locale=locale,
+            extra_context=extra_context,
+            report_output=report_output,
             report_format=report_format,
-            output_path=output,
-            report_output_path=report_output,
-            log_path=log,
-            prompt_text=prompt_text,
-            extra_context_paths=extra_context,
+            log=log,
+            prompt=prompt,
             timeout_seconds=timeout_seconds,
             max_tokens=max_tokens,
             verbose=verbose,
@@ -1070,6 +805,8 @@ def _cmd_linkedin_generate(
     quiet: bool,
     verbose: int,
 ) -> None:
+    from .linkedin_generate import LinkedInGenerateError
+
     if format not in ("txt", "md", "json"):
         typer.echo(f"Error: unsupported --format '{format}' (supported: txt, md, json)", err=True)
         raise typer.Exit(code=1)
@@ -1104,32 +841,16 @@ def _cmd_linkedin_generate(
                 )
                 raise typer.Exit(code=1)
 
-    from .llm.config import LLMConfigError, load_config
-    from .linkedin_generate import LinkedInGenerateError, load_prompt, run_generate
-
-    prompt_source = "custom" if prompt else "default"
     try:
-        prompt_text = load_prompt(prompt)
-    except LinkedInGenerateError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
-
-    try:
-        cfg = load_config(config_path, profile="linkedin_generate")
-    except LLMConfigError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
-
-    try:
-        report_str, report_data, meta = run_generate(
-            candidate_path=str(candidate),
-            config=cfg,
+        report_str, report_data, meta = generate_linkedin_report_file(
+            candidate_path=candidate,
+            output=output,
+            config_path=config_path,
             locale=locale,
             format=format,
-            output_path=output,
-            log_path=log,
-            prompt_text=prompt_text,
-            extra_context_paths=extra_context,
+            log=log,
+            prompt=prompt,
+            extra_context=extra_context,
             timeout_seconds=timeout_seconds,
             max_tokens=max_tokens,
             verbose=verbose,
@@ -1367,31 +1088,12 @@ def init(
         help="Overwrite the destination file if it already exists",
     ),
 ):
-
-    from ._resources import config_template_path
-
-    src = config_template_path()
-    if not src.exists():
-        typer.echo(f"Error: config template not found at {src}", err=True)
-        raise typer.Exit(code=1)
-
-    dst = Path(output)
-    if dst.exists() and not force:
-        typer.echo(
-            f"Error: config file already exists: {dst}\n"
-            f"Use --force to overwrite it or --output to choose another path.",
-            err=True,
-        )
-        raise typer.Exit(code=1)
-
     try:
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
-    except OSError as e:
-        typer.echo(f"Error: cannot write config file: {dst} — {e}", err=True)
+        path = bootstrap_config_file(output, force=force)
+    except (FileNotFoundError, FileExistsError, OSError) as e:
+        typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
-
-    typer.echo(f"Created: {dst}")
+    typer.echo(f"Created: {path}")
     typer.echo("This file is an optional TOML override; environment variables are still supported.")
 
 
