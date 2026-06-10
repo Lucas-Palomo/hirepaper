@@ -2,7 +2,7 @@
 
 **JSON → LaTeX → PDF resume generator**
 
-`hirepaper` takes a structured JSON resume, renders it through a LaTeX template, and produces an ATS-safe PDF — all from the command line.
+`hirepaper` takes a structured JSON resume, renders it through a LaTeX template, and produces an ATS-safe PDF — from the command line or as a Python library.
 
 ## Pipeline
 
@@ -19,27 +19,7 @@ candidate.json → Python data model → LaTeX template → LuaLaTeX → PDF →
 - Clickable email (`mailto:`) and phone (`tel:`/WhatsApp) hyperlinks
 - Locale support (en, pt-BR)
 - Single-file binary packaging via PyInstaller
-
-## Before & After
-
-Below is a visual comparison between a standard resume PDF and a version tailored to a specific vacancy using LLM-powered content rewriting.
-
-![before-after](docs/assets/before-after.png)
-
-The tailored candidate JSON was generated with:
-
-```bash
-hirepaper content tailor data/candidate.json data/vacancy.txt \
-  --output data/candidate-tailored.json \
-  --inference high \
-  --mode rewrite
-```
-
-Sample files:
-- **Standard input:** [`data/candidate.json`](data/candidate.json)
-- **Tailored output:** [`data/candidate-tailored.json`](data/candidate-tailored.json)
-- **Standard PDF:** [`docs/examples/hirepaper-sample.pdf`](docs/examples/hirepaper-sample.pdf)
-- **Tailored PDF:** [`docs/examples/hirepaper-sample-tailored.pdf`](docs/examples/hirepaper-sample-tailored.pdf)
+- Importable Python API for embedding in applications
 
 ## Prerequisites
 
@@ -49,25 +29,36 @@ Sample files:
 - `pdftotext`, `pdffonts` (poppler-utils)
 - `exiftool`
 
-## Quick Start
+## Install
 
 ```bash
-# Run from source
-./hirepaper-dev doctor
-./hirepaper-dev content init --output my-candidate.json
-./hirepaper-dev content lint my-candidate.json
-./hirepaper-dev pdf generate my-candidate.json --output resume.pdf --locale en
-
-# Build packaged binary
-.venv/bin/python build.py
-
-# Run packaged
-./hirepaper doctor
-./hirepaper pdf generate my-candidate.json --output resume.pdf --locale en
-./hirepaper pdf check resume.pdf
+pip install git+https://github.com/Lucas-Palomo/hirepaper.git
 ```
 
-## Commands
+---
+
+## CLI Usage
+
+### Quick Start
+
+```bash
+# Run diagnostics
+hirepaper doctor
+
+# Bootstrap a starter candidate JSON
+hirepaper content init --output my-candidate.json
+
+# Validate candidate data
+hirepaper content lint my-candidate.json
+
+# Generate PDF resume
+hirepaper pdf generate my-candidate.json --output resume.pdf --locale en
+
+# ATS-safety check
+hirepaper pdf check resume.pdf
+```
+
+### Commands
 
 | Command | Description |
 |---|---|
@@ -83,6 +74,83 @@ Sample files:
 | `hirepaper llm usage` | Token usage diagnostic |
 | `hirepaper linkedin generate` | LinkedIn-focused report generation |
 
+---
+
+## Library Usage
+
+`hirepaper` exposes a public API under `hirepaper.api` for embedding workflows
+directly in Python without invoking the CLI.
+
+```python
+from hirepaper.api import (
+    generate_pdf_file,
+    check_pdf_file,
+    lint_candidate_file,
+    bootstrap_candidate_file,
+)
+```
+
+### End-to-end example
+
+```python
+from hirepaper.api import generate_pdf_file, lint_candidate_file, check_pdf_file
+
+# Validate candidate data
+result = lint_candidate_file("data/candidate.json")
+assert result.fail == 0
+
+# Generate PDF
+pdf = generate_pdf_file(
+    "data/candidate.json",
+    output_path="output/resume.pdf",
+    locale="en",
+    density="compact",
+)
+assert pdf.build_status == "success"
+
+# ATS check
+exit_code = check_pdf_file("output/resume.pdf")
+assert exit_code == 0
+```
+
+### Object-first usage
+
+For callers who already have candidate data in memory, the API also accepts
+`Candidate` dataclass objects directly:
+
+```python
+from hirepaper.api import generate_pdf, lint_candidate_data, match_candidate
+from hirepaper.models import Candidate, Personal, Phone, Experience
+
+candidate = Candidate(
+    personal=Personal(
+        name="Jane Doe",
+        email="jane@example.com",
+        phone=Phone(value="+1 555 123 4567", hyperlink="tel:+15551234567"),
+        location="Austin, TX",
+        headline="Senior Software Engineer",
+    ),
+    summary="Backend engineer focused on Python and APIs.",
+    experience=[
+        Experience(
+            company="Example Corp",
+            position="Senior Software Engineer",
+            location="Austin, TX",
+            start_date="2022-01",
+            end_date=None,
+            current=True,
+            highlights=["Led API modernization."],
+        )
+    ],
+)
+
+result = generate_pdf(candidate, output_path="output/resume.pdf", locale="en")
+```
+
+See [docs/library.md](docs/library.md) for the full API reference.
+
+---
+
 ## Development
 
 ```bash
@@ -91,23 +159,22 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Run from source
+# Run from source (without installing)
 ./hirepaper-dev --help
 
-# Build binary
+# Build packaged binary
 .venv/bin/python build.py
 ```
 
 ## Documentation
 
 - [project.md](project.md) — architecture, layout, density, packaging
+- [docs/library.md](docs/library.md) — full library API reference
 - [docs/content.md](docs/content.md) — `content` command reference
 - [docs/pdf.md](docs/pdf.md) — `pdf` command reference
 - [docs/content-match.md](docs/content-match.md) — `content match` detailed usage
 - [docs/content-tailor.md](docs/content-tailor.md) — `content tailor` detailed usage
-- [docs/content-match.md](docs/content-match.md) — `content match` detailed usage
 - [docs/file-map.md](docs/file-map.md) — source layout and important paths
-- [docs/library.md](docs/library.md) — using `hirepaper` as an importable Python library
 - [agents.md](agents.md) — agent execution rules
 - [sdd/backlog/](sdd/backlog/) — planned tasks
 - [sdd/history/](sdd/history/) — completed task records
