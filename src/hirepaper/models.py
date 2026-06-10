@@ -26,6 +26,13 @@ class Personal:
 
 
 @dataclass
+class AchievementContext:
+    action: Optional[str] = None
+    result: Optional[str] = None
+    metrics: Optional[str] = None
+
+
+@dataclass
 class Achievement:
     situation: Optional[str] = None
     task: Optional[str] = None
@@ -33,6 +40,7 @@ class Achievement:
     result: Optional[str] = None
     metrics: Optional[str] = None
     summary: Optional[str] = None
+    context: Optional[AchievementContext] = None
 
 
 @dataclass

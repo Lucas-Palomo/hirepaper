@@ -95,9 +95,14 @@
   \end{tabular}\vspace{5pt}\nobreak\par%
 }
 
-% --- Sub-line (technologies, role context, employment type) ---
+% --- Sub-line (role context, supporting text) ---
 \newcommand{\resumeEntrySub}[1]{%
   {\fontsize{9.5}{11.5}\selectfont #1}\vspace{0.5pt}\par%
+}
+
+% --- Technology/keyword line (smaller secondary text, placed after bullets) ---
+\newcommand{\resumeTechSub}[1]{%
+  {\fontsize{8.5}{10.5}\selectfont\color{subdued} #1}\vspace{1pt}\par%
 }
 
 % --- Icons (decorative SVGs) ---

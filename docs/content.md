@@ -9,6 +9,15 @@ Analyze and transform candidate source data.
 - `match` — ATS-style LLM compatibility analysis
 - `tailor` — Tailor candidate JSON to a vacancy
 
+### Input format
+
+All commands that read a candidate JSON file accept **JSONC** — standard JSON
+with `//` line comments and `/* */` block comments. Comments are stripped
+during parsing and have no effect on the data model. Output files remain
+standard JSON.
+
+Existing strict JSON files continue to work unchanged.
+
 ---
 
 ## content init

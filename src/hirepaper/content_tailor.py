@@ -181,6 +181,15 @@ def _build_candidate_payload_with_ids(candidate: Candidate) -> dict:
                     "result": a.result or "",
                     "metrics": a.metrics or "",
                     "summary": a.summary or "",
+                    "context": (
+                        {
+                            "action": a.context.action or "",
+                            "result": a.context.result or "",
+                            "metrics": a.context.metrics or "",
+                        }
+                        if a.context
+                        else None
+                    ),
                 }
                 for j, a in enumerate(e.achievements)
             ],

@@ -108,6 +108,15 @@ def _build_candidate_payload(candidate: Candidate) -> dict:
                     "result": a.result or "",
                     "metrics": a.metrics or "",
                     "summary": a.summary or "",
+                    "context": (
+                        {
+                            "action": a.context.action or "",
+                            "result": a.context.result or "",
+                            "metrics": a.context.metrics or "",
+                        }
+                        if a.context
+                        else None
+                    ),
                 }
                 for a in e.achievements
             ],

@@ -12,7 +12,7 @@ candidate.json → Python data model → LaTeX template → LuaLaTeX → PDF →
 
 ## Features
 
-- Structured JSON input with schema validation
+- Structured JSON input with schema validation, JSONC comment support, and optional STAR-like achievement context
 - ATS-safe PDF output (text extraction, fonts, metadata)
 - LLM-powered content matching and tailoring against vacancy descriptions
 - Two density modes: `compact` and `full`

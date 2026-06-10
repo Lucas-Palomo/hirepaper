@@ -1,15 +1,89 @@
 import json
+import re
 from pathlib import Path
 
 from .models import (
-    Achievement, Award, Candidate, Certification, Education, Experience,
-    Language, Link, Personal, Phone, Project, SkillCategory, Skills,
-    VolunteerExperience,
+    Achievement, AchievementContext, Award, Candidate, Certification,
+    Education, Experience, Language, Link, Personal, Phone, Project,
+    SkillCategory, Skills, VolunteerExperience,
 )
 
 
+def _is_whitespace(ch: str) -> bool:
+    return ch in ' \t\n\r'
+
+
+def _strip_jsonc(text: str) -> str:
+    out: list[str] = []
+    i = 0
+    n = len(text)
+    in_string = False
+    escape = False
+
+    while i < n:
+        ch = text[i]
+
+        if in_string:
+            if escape:
+                escape = False
+                out.append(ch)
+                i += 1
+                continue
+            if ch == '\\':
+                escape = True
+                out.append(ch)
+                i += 1
+                continue
+            if ch == '"':
+                in_string = False
+                out.append(ch)
+                i += 1
+                continue
+            out.append(ch)
+            i += 1
+            continue
+
+        # Not in string
+        if ch == '"':
+            in_string = True
+            out.append(ch)
+            i += 1
+            continue
+
+        # Line comment
+        if ch == '/' and i + 1 < n and text[i + 1] == '/':
+            i += 2
+            while i < n and text[i] != '\n':
+                i += 1
+            continue
+
+        # Block comment
+        if ch == '/' and i + 1 < n and text[i + 1] == '*':
+            i += 2
+            while i < n:
+                if text[i] == '*' and i + 1 < n and text[i + 1] == '/':
+                    i += 2
+                    break
+                i += 1
+            continue
+
+        out.append(ch)
+        i += 1
+
+    return ''.join(out)
+
+
+def load_json(path: str | Path) -> dict:
+    text = Path(path).read_text(encoding="utf-8")
+    clean = _strip_jsonc(text)
+    try:
+        return json.loads(clean)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON (after stripping JSONC comments): {e}")
+
+
 def load_candidate(path: str | Path) -> Candidate:
-    raw = json.loads(Path(path).read_text(encoding="utf-8"))
+    raw = load_json(path)
     _validate(raw)
     return _parse(raw)
 
@@ -24,7 +98,25 @@ def _validate(raw: dict) -> None:
 
 
 def _parse_achievements(raw_list: list[dict]) -> list[Achievement]:
-    return [Achievement(**a) for a in raw_list]
+    result: list[Achievement] = []
+    for a in raw_list:
+        ctx_raw = a.get("context")
+        filtered = {k: v for k, v in a.items() if k != "context"}
+        ach = Achievement(**filtered)
+        if ctx_raw and isinstance(ctx_raw, dict):
+            ach.context = AchievementContext(
+                action=ctx_raw.get("action"),
+                result=ctx_raw.get("result"),
+                metrics=ctx_raw.get("metrics"),
+            )
+        elif ach.action or ach.result or ach.metrics:
+            ach.context = AchievementContext(
+                action=ach.action,
+                result=ach.result,
+                metrics=ach.metrics,
+            )
+        result.append(ach)
+    return result
 
 
 def _parse_phone(raw: object) -> Phone:

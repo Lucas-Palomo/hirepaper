@@ -13,6 +13,9 @@ Generate and validate PDF artifacts.
 
 Generate a PDF resume from a candidate JSON file.
 
+The input candidate file accepts **JSONC** format — standard JSON with `//`
+line comments and `/* */` block comments. Comments are stripped during parsing.
+
 ```bash
 hirepaper pdf generate <candidate.json> --output <pdf> [options]
 ```

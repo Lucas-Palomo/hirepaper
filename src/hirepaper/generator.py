@@ -430,13 +430,10 @@ def _render_experience(experiences: list[Experience], locale: Locale, policy: De
             "}"
         )
 
-        if policy.show_experience_technologies:
-            tech = _format_tech(exp.technologies)
-            if tech:
-                lines.append(f"\\resumeEntrySub{{{tech}}}")
-
         if policy.show_role_summary and exp.role_summary:
-            lines.append(f"\\resumeEntrySub{{\\textit{{{_escape_tex(exp.role_summary)}}}}}")
+            lines.append(f"\\resumeEntrySub{{{_escape_tex(exp.role_summary)}}}")
+            if exp.achievements or exp.highlights:
+                lines.append("\\vspace{3pt}")
 
         bullets: list[str] = []
         if exp.achievements:
@@ -450,6 +447,11 @@ def _render_experience(experiences: list[Experience], locale: Locale, policy: De
         if bullets:
             scored = _score_and_sort(bullets)
             lines.append(_render_bullets(scored, policy.max_experience_bullets))
+
+        if policy.show_experience_technologies:
+            tech = _format_tech(exp.technologies)
+            if tech:
+                lines.append(f"\\resumeTechSub{{{tech}}}")
 
         groups.append("\n".join(lines))
 
